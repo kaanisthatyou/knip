@@ -1,7 +1,11 @@
 import type { CompilerSync } from './types.ts';
 
-export const fencedCodeBlockMatcher = /```[\s\S]*?```/g;
-export const inlineCodeMatcher = /`[^`]+`/g;
+// Fenced code block: an opening fence of 3+ backticks (info string without backticks) or tildes at the start of a line,
+// up to a closing fence of the same character that is at least as long, or the end of the text (CommonMark)
+export const fencedCodeBlockMatcher =
+  /^[ \t]*(([`~])\2{2,})(?:(?<=`)[^`\n]*|(?<=~)[^\n]*)$(?:[\s\S]*?^[ \t]*\1\2*[ \t]*\r?$|[\s\S]*)/gm;
+// Code span: a run of backticks up to a run of the same length, not across a blank line (CommonMark)
+export const inlineCodeMatcher = /(?<!`)(`+)(?!`)(?:(?!\n[ \t]*\r?\n)[\s\S])*?(?<!`)\1(?!`)/g;
 
 // Match <script> blocks, capturing attributes (1) and body (2).
 // Tag-attribute scan allows `>` inside quoted attribute values (e.g. Vue `generic="T extends F<X>"`).
